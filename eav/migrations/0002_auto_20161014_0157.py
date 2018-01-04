@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='attribute',
-            unique_together=set([('site', 'content_type', 'slug')]),
+            unique_together=set([('content_type', 'slug')]),
         ),
     ]

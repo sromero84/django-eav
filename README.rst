@@ -6,8 +6,13 @@ Introduction
 ------------
 
 
-**This is a fork of https://github.com/mvpdev/django-eav, to make it Python 3 and Django 2.0 compatible
-and remove dependency on Django Site framework.**
+**This is a fork of https://github.com/mvpdev/django-eav, to make it Python 3 and Django 2.0 compatible, remove dependency on Django Site framework and make `eav` work at jsut instance level.**
+
+What this means? That you can create attributes for entities only if you have an instance, you cannot
+create an attribute for a given model. Registering a model allows you to create attributes for its
+instances and query them.
+
+--------
 
 django-eav provides an Entity-Attribute-Value storage model for django apps.
 

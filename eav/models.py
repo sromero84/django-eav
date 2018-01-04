@@ -38,6 +38,7 @@ from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields as generic
 from django.conf import settings
@@ -174,9 +175,10 @@ class Attribute(models.Model):
     name = models.CharField(_(u"name"), max_length=100,
                             help_text=_(u"User-friendly attribute name"))
 
-    content_type = models.ForeignKey(ContentType,
-                            blank=True, null=True, on_delete=models.SET_NULL,
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
                             verbose_name=_(u"content type"))
+    object_id = models.PositiveIntegerField()
+    attribute_object = GenericForeignKey('content_type', 'object_id')
 
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
                           help_text=_(u"Short unique attribute label"))
@@ -443,7 +445,7 @@ class Entity(object):
         for this entity.
         '''
         return self.model._eav_config_cls.get_attributes().filter(
-            models.Q(content_type__isnull=True) | models.Q(content_type=self.ct)).order_by('display_order')
+            object_id=self.model.pk, content_type=self.ct).order_by('display_order')
 
     def _hasattr(self, attribute_slug):
         '''

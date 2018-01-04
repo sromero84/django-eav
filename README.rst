@@ -5,6 +5,9 @@ django-eav
 Introduction
 ------------
 
+
+**This is a fork of https://github.com/mvpdev/django-eav, to make it Python 3 compatible.**
+
 django-eav provides an Entity-Attribute-Value storage model for django apps.
 
 For a decent explanation of what an Entity-Attribute-Value storage model is,
@@ -15,10 +18,10 @@ check `Wikipedia
    This software was inspired / derived from the excellent `eav-django
    <http://pypi.python.org/pypi/eav-django/1.0.2>`_ written by Andrey
    Mikhaylenko.
-   
+
    There are a few notable differences between this implementation and the
    eav-django implementation.
-   
+
    * This one is called django-eav, whereas the other is called eav-django.
    * This app allows you to to 'attach' EAV attributes to any existing django
      model (even from third-party apps) without making any changes to the those

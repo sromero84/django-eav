@@ -363,7 +363,7 @@ class Value(models.Model):
     created = models.DateTimeField(_(u"created"), default=timezone.now)
     modified = models.DateTimeField(_(u"modified"), auto_now=True)
 
-    attribute = models.ForeignKey(Attribute, db_index=True,
+    attribute = models.ForeignKey(Attribute, db_index=True, on_delete=models.CASCADE,
                                   verbose_name=_(u"attribute"))
 
     def save(self, *args, **kwargs):

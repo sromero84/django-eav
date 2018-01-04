@@ -177,10 +177,10 @@ class Attribute(models.Model):
                             help_text=_(u"User-friendly attribute name"))
 
     content_type = models.ForeignKey(ContentType,
-                            blank=True, null=True,
+                            blank=True, null=True, on_delete=models.SET_NULL,
                             verbose_name=_(u"content type"))
 
-    site = models.ForeignKey(Site, verbose_name=_(u"site"),
+    site = models.ForeignKey(Site, verbose_name=_(u"site"), on_delete=models.CASCADE,
                              default=settings.SITE_ID)
 
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
@@ -191,7 +191,7 @@ class Attribute(models.Model):
                                      help_text=_(u"Short description"))
 
     enum_group = models.ForeignKey(EnumGroup, verbose_name=_(u"choice group"),
-                                   blank=True, null=True)
+                                   blank=True, null=True, on_delete=models.SET_NULL)
 
     type = models.CharField(_(u"type"), max_length=20, blank=True, null=True)
 
@@ -341,7 +341,7 @@ class Value(models.Model):
     <Value: crazy_dev_user - Favorite Drink: "red bull">
     '''
 
-    entity_ct = models.ForeignKey(ContentType, related_name='value_entities')
+    entity_ct = models.ForeignKey(ContentType, related_name='value_entities', on_delete=models.CASCADE)
     entity_id = models.IntegerField()
     entity = generic.GenericForeignKey(ct_field='entity_ct',
                                        fk_field='entity_id')
@@ -351,11 +351,11 @@ class Value(models.Model):
     value_int = models.IntegerField(blank=True, null=True)
     value_date = models.DateTimeField(blank=True, null=True)
     value_bool = models.NullBooleanField(blank=True, null=True)
-    value_enum = models.ForeignKey(EnumValue, blank=True, null=True,
+    value_enum = models.ForeignKey(EnumValue, blank=True, null=True, on_delete=models.SET_NULL,
                                    related_name='eav_values')
 
     generic_value_id = models.IntegerField(blank=True, null=True)
-    generic_value_ct = models.ForeignKey(ContentType, blank=True, null=True,
+    generic_value_ct = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL,
                                          related_name='value_values')
     value_object = generic.GenericForeignKey(ct_field='generic_value_ct',
                                              fk_field='generic_value_id')

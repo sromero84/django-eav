@@ -151,7 +151,7 @@ class Attribute(models.Model):
 
     class Meta:
         ordering = ['content_type', 'name']
-        unique_together = ('site', 'content_type', 'slug')
+        unique_together = ('content_type', 'slug')
 
     TYPE_TEXT = 'text'
     TYPE_FLOAT = 'float'

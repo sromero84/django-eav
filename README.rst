@@ -6,7 +6,8 @@ Introduction
 ------------
 
 
-**This is a fork of https://github.com/mvpdev/django-eav, to make it Python 3 and Django 2.0 compatible.**
+**This is a fork of https://github.com/mvpdev/django-eav, to make it Python 3 and Django 2.0 compatible
+and remove dependency on Django Site framework.**
 
 django-eav provides an Entity-Attribute-Value storage model for django apps.
 
@@ -34,23 +35,9 @@ Installation
 
 From Github
 ~~~~~~~~~~~
-You can install django-eav directly from guthub::
+You can install django-eav directly from github::
 
     pip install -e git+git://github.com/sromero84/django-eav.git#egg=django-eav
-
-Prerequisites
--------------
-
-Django Sites Framework
-~~~~~~~~~~~~~~~~~~~~~~
-As of Django 1.7, the `Sites framework <https://docs.djangoproject.com/en/1.8/ref/contrib/sites/#enabling-the-sites-framework>`_ is not enabled by default; Django-EAV requires this framework.
-To enable the sites framework, follow these steps:
-
-Add ``django.contrib.sites`` to your INSTALLED_APPS setting. Be sure to add sites to the installed apps list BEFORE eav!
-
-Define a ``SITE_ID`` setting::
-
-    SITE_ID = 1
 
 Run ``migrate``
 
@@ -60,7 +47,7 @@ Usage
 
 Edit settings.py
 ~~~~~~~~~~~~~~~~
-Add ``eav`` to your ``INSTALLED_APPS`` in your project's ``settings.py`` file. Be sure to add eav to the installed apps list AFTER the sites framework!
+Add ``eav`` to your ``INSTALLED_APPS`` in your project's ``settings.py`` file.
 
 Register your model(s)
 ~~~~~~~~~~~~~~~~~~~~~~

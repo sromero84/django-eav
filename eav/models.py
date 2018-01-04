@@ -40,8 +40,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields as generic
-from django.contrib.sites.models import Site
-from django.contrib.sites.managers import CurrentSiteManager
 from django.conf import settings
 
 from .validators import *
@@ -180,9 +178,6 @@ class Attribute(models.Model):
                             blank=True, null=True, on_delete=models.SET_NULL,
                             verbose_name=_(u"content type"))
 
-    site = models.ForeignKey(Site, verbose_name=_(u"site"), on_delete=models.CASCADE,
-                             default=settings.SITE_ID)
-
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
                           help_text=_(u"Short unique attribute label"))
 
@@ -212,7 +207,6 @@ class Attribute(models.Model):
     display_order = models.PositiveIntegerField(_(u"display order"), default=1)
 
     objects = models.Manager()
-    on_site = CurrentSiteManager()
 
     def get_validators(self):
         '''

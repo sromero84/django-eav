@@ -38,7 +38,6 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ('objects', django.db.models.manager.Manager()),
-                ('on_site', django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.CreateModel(
@@ -83,11 +82,6 @@ class Migration(migrations.Migration):
             model_name='attribute',
             name='enum_group',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='eav.EnumGroup', verbose_name='choice group'),
-        ),
-        migrations.AddField(
-            model_name='attribute',
-            name='site',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='sites.Site', verbose_name='site'),
         ),
         migrations.AlterUniqueTogether(
             name='attribute',

@@ -27,8 +27,7 @@ Classes
 -------
 '''
 
-from django.db.utils import DatabaseError
-from django.db.models.signals import pre_init, post_init, pre_save, post_save
+from django.db.models.signals import post_init, pre_save, post_save
 from django.contrib.contenttypes import fields as generic
 
 from .managers import EntityManager
@@ -53,7 +52,7 @@ class EavConfig(object):
         By default, all :class:`~eav.models.Attribute` object apply to an
         entity, unless you provide a custom EavConfig class overriding this.
         '''
-        return Attribute.on_site.all()
+        return Attribute.objects.all()
 
 
 class Registry(object):

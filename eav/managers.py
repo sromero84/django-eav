@@ -166,7 +166,7 @@ class EntityManager(models.Manager):
 
         new_kwargs = {}
         eav_kwargs = {}
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             if key.startswith(prefix):
                 eav_kwargs.update({key[len(prefix):]: value})
             else:
@@ -174,7 +174,7 @@ class EntityManager(models.Manager):
 
         obj = self.model(**new_kwargs)
         obj_eav = getattr(obj, config_cls.eav_attr)
-        for key, value in eav_kwargs.iteritems():
+        for key, value in eav_kwargs.items():
             setattr(obj_eav, key, value)
         obj.save()
         return obj

@@ -45,6 +45,8 @@ class EavConfig(object):
     eav_attr = 'eav'
     generic_relation_attr = 'eav_values'
     generic_relation_related_name = None
+    entity_class = Entity
+    entity_manager = EntityManager
 
     @classmethod
     def get_attributes(cls):
@@ -105,7 +107,7 @@ class Registry(object):
         '''
         instance = kwargs['instance']
         config_cls = instance.__class__._eav_config_cls
-        setattr(instance, config_cls.eav_attr, Entity(instance))
+        setattr(instance, config_cls.eav_attr, config_cls.entity_class(instance))
 
     def __init__(self, model_cls):
         '''
@@ -123,8 +125,8 @@ class Registry(object):
             mgr = getattr(self.model_cls, self.config_cls.manager_attr)
             self.config_cls.old_mgr = mgr
 
-        # attache the new manager to the model
-        mgr = EntityManager()
+        # attach the new manager to the model
+        mgr = self.config_cls.entity_manager()
         mgr.contribute_to_class(self.model_cls, self.config_cls.manager_attr)
 
     def _detach_manager(self):
@@ -142,16 +144,16 @@ class Registry(object):
         Attach all signals for eav
         '''
         post_init.connect(Registry.attach_eav_attr, sender=self.model_cls)
-        pre_save.connect(Entity.pre_save_handler, sender=self.model_cls)
-        post_save.connect(Entity.post_save_handler, sender=self.model_cls)
+        pre_save.connect(getattr(self.config_cls.entity_class, 'pre_save_handler'), sender=self.model_cls)
+        post_save.connect(getattr(self.config_cls.entity_class, 'post_save_handler'), sender=self.model_cls)
 
     def _detach_signals(self):
         '''
         Detach all signals for eav
         '''
         post_init.disconnect(Registry.attach_eav_attr, sender=self.model_cls)
-        pre_save.disconnect(Entity.pre_save_handler, sender=self.model_cls)
-        post_save.disconnect(Entity.post_save_handler, sender=self.model_cls)
+        pre_save.disconnect(getattr(self.config_cls.entity_class, 'pre_save_handler'), sender=self.model_cls)
+        post_save.disconnect(getattr(self.config_cls.entity_class, 'post_save_handler'), sender=self.model_cls)
 
     def _attach_generic_relation(self):
         '''

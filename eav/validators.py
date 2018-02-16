@@ -46,6 +46,7 @@ def validate_text(value):
     '''
     if not (type(value) == str):
         raise ValidationError(_(u"Must be str or unicode"))
+    return value
 
 
 def validate_float(value):
@@ -53,7 +54,7 @@ def validate_float(value):
     Raises ``ValidationError`` unless *value* can be cast as a ``float``
     '''
     try:
-        float(value)
+        return float(value)
     except ValueError:
         raise ValidationError(_(u"Must be a float"))
 
@@ -63,7 +64,7 @@ def validate_int(value):
     Raises ``ValidationError`` unless *value* can be cast as an ``int``
     '''
     try:
-        int(value)
+        return int(value)
     except ValueError:
         raise ValidationError(_(u"Must be an integer"))
 
@@ -75,6 +76,7 @@ def validate_date(value):
     '''
     if not (isinstance(value, timezone.datetime) or isinstance(value, timezone.datetime.date)):
         raise ValidationError(_(u"Must be a date or datetime"))
+    return value
 
 
 def validate_bool(value):
@@ -83,6 +85,7 @@ def validate_bool(value):
     '''
     if not type(value) == bool:
         raise ValidationError(_(u"Must be a boolean"))
+    return value
 
 
 def validate_object(value):
@@ -94,6 +97,7 @@ def validate_object(value):
         raise ValidationError(_(u"Must be a django model object instance"))
     if not value.pk:
         raise ValidationError(_(u"Model has not been saved yet"))
+    return value
 
 
 def validate_enum(value):
@@ -106,3 +110,4 @@ def validate_enum(value):
         raise ValidationError(_(u"Must be an EnumValue model object instance"))
     if not value.pk:
         raise ValidationError(_(u"EnumValue has not been saved yet"))
+    return value

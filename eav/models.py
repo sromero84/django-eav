@@ -151,6 +151,7 @@ class Attribute(models.Model):
 
     class Meta:
         ordering = ['created', 'name']
+        unique_together = ('content_type', 'slug')
 
     TYPE_TEXT = 'text'
     TYPE_FLOAT = 'float'
@@ -175,8 +176,9 @@ class Attribute(models.Model):
     name = models.CharField(_(u"name"), max_length=100,
                             help_text=_(u"User-friendly attribute name"))
 
-    content_types = models.ManyToManyField(ContentType,
-                            blank=True, related_name='eav_attributes', verbose_name=_(u"content types"))
+    content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name=_(u"content type"))
 
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
                           help_text=_(u"Short unique attribute label"))
@@ -450,8 +452,8 @@ class Entity(object):
         for this entity.
         '''
         return self.model._eav_config_cls.get_attributes().filter(
-            models.Q(content_types__isnull=True) |
-            models.Q(content_types__in=self.ct)).order_by('display_order')
+            models.Q(content_type__isnull=True) |
+            models.Q(content_type=self.ct)).order_by('display_order')
 
     def _hasattr(self, attribute_slug):
         '''

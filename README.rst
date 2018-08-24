@@ -12,6 +12,7 @@ Introduction
 - Make it Django 2.0 compatible
 - Remove dependency on Django Site framework
 - Allow a custom Entity class and custom EntityManager class
+- Add `Decimal` attribute type (using django `DecimalValidator`)
 
 The `EavConfig` now includes two new attributes `entity_class` and `entity_manager`, that default to `Entity` and `EntityManager` respectively.
 

@@ -150,11 +150,12 @@ class Attribute(models.Model):
     '''
 
     class Meta:
-        ordering = ['content_type', 'name']
+        ordering = ['created', 'name']
         unique_together = ('content_type', 'slug')
 
     TYPE_TEXT = 'text'
     TYPE_FLOAT = 'float'
+    TYPE_DECIMAL = 'decimal'
     TYPE_INT = 'int'
     TYPE_DATE = 'date'
     TYPE_BOOLEAN = 'bool'
@@ -163,6 +164,7 @@ class Attribute(models.Model):
 
     DATATYPE_CHOICES = (
         (TYPE_TEXT, _(u"Text")),
+        (TYPE_DECIMAL, _(u"Decimal")),
         (TYPE_FLOAT, _(u"Float")),
         (TYPE_INT, _(u"Integer")),
         (TYPE_DATE, _(u"Date")),
@@ -174,9 +176,9 @@ class Attribute(models.Model):
     name = models.CharField(_(u"name"), max_length=100,
                             help_text=_(u"User-friendly attribute name"))
 
-    content_type = models.ForeignKey(ContentType,
-                            blank=True, null=True, on_delete=models.SET_NULL,
-                            verbose_name=_(u"content type"))
+    content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name=_(u"content type"))
 
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
                           help_text=_(u"Short unique attribute label"))
@@ -194,7 +196,7 @@ class Attribute(models.Model):
     def help_text(self):
         return self.description
 
-    datatype = EavDatatypeField(_(u"data type"), max_length=6,
+    datatype = EavDatatypeField(_(u"data type"), max_length=7,
                                 choices=DATATYPE_CHOICES)
 
     created = models.DateTimeField(_(u"created"), default=timezone.now,
@@ -220,6 +222,7 @@ class Attribute(models.Model):
         '''
         DATATYPE_VALIDATORS = {
             'text': validate_text,
+            'decimal': validate_decimal,
             'float': validate_float,
             'int': validate_int,
             'date': validate_date,
@@ -341,6 +344,7 @@ class Value(models.Model):
                                        fk_field='entity_id')
 
     value_text = models.TextField(blank=True, null=True)
+    value_decimal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     value_float = models.FloatField(blank=True, null=True)
     value_int = models.IntegerField(blank=True, null=True)
     value_date = models.DateTimeField(blank=True, null=True)
@@ -443,7 +447,8 @@ class Entity(object):
         for this entity.
         '''
         return self.model._eav_config_cls.get_attributes().filter(
-            models.Q(content_type__isnull=True) | models.Q(content_type=self.ct)).order_by('display_order')
+            models.Q(content_type__isnull=True) |
+            models.Q(content_type=self.ct)).order_by('display_order')
 
     def _hasattr(self, attribute_slug):
         '''

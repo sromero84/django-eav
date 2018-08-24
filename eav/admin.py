@@ -95,8 +95,12 @@ class BaseEntityInline(InlineModelAdmin):
 
 
 class AttributeAdmin(ModelAdmin):
-    list_display = ('name', 'content_type', 'slug', 'datatype', 'description')
+    list_display = ('name', 'get_content_types', 'slug', 'datatype', 'description')
     prepopulated_fields = {'slug': ('name',)}
+
+    def get_content_types(self, obj):
+        return ', '.join([str(ct) for ct in obj.content_types.all()])
+    get_content_types.short_description = 'Content Types'
 
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Value)

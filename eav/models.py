@@ -315,7 +315,12 @@ class Attribute(models.Model):
             value_obj.save()
 
     def __str__(self):
-        return u"%s.%s (%s)" % (self.content_type, self.name, self.get_datatype_display())
+        preffix = ''
+        if self.content_types.count() == 1:
+            preffix = '{}'.format(self.content_types.first())
+        else:
+            preffix = '{' + '|'.join([str(ct) for ct in self.content_types.all()]) + '}'
+        return u"%s.%s (%s)" % (preffix, self.name, self.get_datatype_display())
 
 
 class Value(models.Model):

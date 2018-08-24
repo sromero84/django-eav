@@ -12,18 +12,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='attribute',
-            options={'ordering': ['created', 'name']},
+        migrations.AddField(
+            model_name='value',
+            name='value_decimal',
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
         ),
         migrations.AlterField(
             model_name='attribute',
             name='datatype',
             field=eav.fields.EavDatatypeField(choices=[('text', 'Text'), ('decimal', 'Decimal'), ('float', 'Float'), ('int', 'Integer'), ('date', 'Date'), ('bool', 'True / False'), ('object', 'Django Object'), ('enum', 'Multiple Choice')], max_length=7, verbose_name='data type'),
-        ),
-        migrations.AlterField(
-            model_name='attribute',
-            name='content_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='attributes', to='contenttypes.ContentType', verbose_name='content types'),
         ),
     ]

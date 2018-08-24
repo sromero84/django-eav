@@ -15,7 +15,7 @@ class Encounter(models.Model):
         app_label = 'eav'
 
     num = models.PositiveSmallIntegerField()
-    patient = models.ForeignKey(Patient)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return '%s: encounter num %d' % (self.patient, self.num)

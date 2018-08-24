@@ -19,6 +19,7 @@ class DataValidation(TestCase):
         Attribute.objects.create(name='Age', datatype=Attribute.TYPE_INT)
         Attribute.objects.create(name='DoB', datatype=Attribute.TYPE_DATE)
         Attribute.objects.create(name='Height', datatype=Attribute.TYPE_FLOAT)
+        Attribute.objects.create(name='Money', datatype=Attribute.TYPE_DECIMAL)
         Attribute.objects.create(name='City', datatype=Attribute.TYPE_TEXT)
         Attribute.objects.create(name='Pregnant?', datatype=Attribute.TYPE_BOOLEAN)
         Attribute.objects.create(name='User', datatype=Attribute.TYPE_OBJECT)
@@ -101,6 +102,23 @@ class DataValidation(TestCase):
         p.eav.dob = today
         p.save()
         self.assertEqual(Patient.objects.get(pk=p.pk).eav.dob.date(), today)
+
+    def test_decimal_validation(self):
+        p = Patient.objects.create(name='Joe')
+        p.eav.money = 'bad'
+        self.assertRaises(ValidationError, p.save)
+        p = Patient.objects.create(name='Joe')
+        p.eav.money = '10.2030348884'
+        self.assertRaises(ValidationError, p.save)
+        p.eav.money = 15
+        p.save()
+        self.assertEqual(Patient.objects.get(pk=p.pk).eav.money, Deimal(15))
+        p.eav.money = '15.23'
+        p.save()
+        self.assertEqual(Patient.objects.get(pk=p.pk).eav.money, Decimal('15.23'))
+        p.eav.money= 20.55
+        p.save()
+        self.assertEqual(Patient.objects.get(pk=p.pk).eav.money, Decimal(20.55))
 
     def test_float_validation(self):
         p = Patient.objects.create(name='Joe')

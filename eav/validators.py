@@ -33,11 +33,13 @@ These validators are called by the
 Functions
 ---------
 '''
+from decimal import Decimal
 
 from django.utils import timezone
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.validators import DecimalValidator
 
 
 def validate_text(value):
@@ -49,6 +51,19 @@ def validate_text(value):
     return value
 
 
+def validate_decimal(value):
+    '''
+    Raises ``ValidationError`` unless *value* can be cast as a ``Decimal``
+    '''
+    try:
+        casted = Decimal(value)
+        decimal_validator = DecimalValidator(10, 2)
+        decimal_validator(casted)
+        return casted
+    except ValueError:
+        raise ValidationError(_(u"Must be a float"))
+
+
 def validate_float(value):
     '''
     Raises ``ValidationError`` unless *value* can be cast as a ``float``
@@ -57,7 +72,7 @@ def validate_float(value):
         return float(value)
     except ValueError:
         raise ValidationError(_(u"Must be a float"))
-
+    
 
 def validate_int(value):
     '''

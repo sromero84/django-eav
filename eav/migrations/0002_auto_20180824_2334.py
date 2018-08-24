@@ -15,10 +15,10 @@ class Migration(migrations.Migration):
             name='attribute',
             options={'ordering': ['created', 'name']},
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='attribute',
-            name='content_types',
-            field=models.ManyToManyField(blank=True, related_name='eav_attributes', to='contenttypes.ContentType', verbose_name='content types'),
+            name='datatype',
+            field=eav.fields.EavDatatypeField(choices=[('text', 'Text'), ('decimal', 'Decimal'), ('float', 'Float'), ('int', 'Integer'), ('date', 'Date'), ('bool', 'True / False'), ('object', 'Django Object'), ('enum', 'Multiple Choice')], max_length=7, verbose_name='data type'),
         ),
         migrations.AlterField(
             model_name='attribute',

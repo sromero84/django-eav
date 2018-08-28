@@ -364,6 +364,9 @@ class Value(models.Model):
     attribute = models.ForeignKey(Attribute, db_index=True, on_delete=models.CASCADE,
                                   verbose_name=_(u"attribute"))
 
+    class Meta:
+        unique_together = ('attribute', 'entity_ct', 'entity_id')
+
     def save(self, *args, **kwargs):
         '''
         Validate and save this value

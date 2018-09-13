@@ -62,7 +62,7 @@ def validate_decimal(value):
         decimal_validator = DecimalValidator(10, 2)
         decimal_validator(casted)
         return casted
-    except ValueError, AssertionError:
+    except (ValueError, AssertionError):
         raise ValidationError(_(u"Must be a float or valid string"))
 
 

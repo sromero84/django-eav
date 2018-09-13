@@ -33,6 +33,7 @@ These validators are called by the
 Functions
 ---------
 '''
+from datetime import date
 from decimal import Decimal
 
 from django.utils import timezone
@@ -89,7 +90,7 @@ def validate_date(value):
     Raises ``ValidationError`` unless *value* is an instance of ``datetime``
     or ``date``
     '''
-    if not (isinstance(value, timezone.datetime) or isinstance(value, timezone.datetime.date)):
+    if not (isinstance(value, timezone.datetime) or isinstance(value, date)):
         raise ValidationError(_(u"Must be a date or datetime"))
     return value
 

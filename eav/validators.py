@@ -99,8 +99,8 @@ def validate_bool(value):
     Raises ``ValidationError`` unless *value* type is ``bool``
     '''
     try:
-        return bool(value)
-    except ValueError:
+        assert value in (None, True, False)
+    except AssertionError:
         raise ValidationError(_(u"Must be a boolean"))
 
 

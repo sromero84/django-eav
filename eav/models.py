@@ -238,7 +238,12 @@ class Attribute(models.Model):
         '''
         Check *value* against the validators returned by
         :meth:`get_validators` for this attribute.
+
+        If attribute is not required and value is empty or None, it will always validate
         '''
+        if self.required is False and value in (None, ''):
+            return
+
         for validator in self.get_validators():
             validator(value)
         if self.datatype == self.TYPE_ENUM:

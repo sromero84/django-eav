@@ -57,12 +57,13 @@ def validate_decimal(value):
     Raises ``ValidationError`` unless *value* can be cast as a ``Decimal``
     '''
     try:
+        assert isinstance(value, str) or isinstance(value, float)
         casted = Decimal(value)
         decimal_validator = DecimalValidator(10, 2)
         decimal_validator(casted)
         return casted
-    except ValueError:
-        raise ValidationError(_(u"Must be a float"))
+    except ValueError, AssertionError:
+        raise ValidationError(_(u"Must be a float or valid string"))
 
 
 def validate_float(value):

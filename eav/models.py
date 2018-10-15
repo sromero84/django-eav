@@ -34,16 +34,16 @@ Classes
 '''
 
 
-from django.utils import timezone
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import fields as generic
 from django.conf import settings
+from django.contrib.contenttypes import fields as generic
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
+from .fields import EavDatatypeField, EavSlugField
 from .validators import *
-from .fields import EavSlugField, EavDatatypeField
 
 
 class EnumValue(models.Model):
@@ -178,7 +178,7 @@ class Attribute(models.Model):
 
     content_type = models.ForeignKey(
         ContentType, blank=True, null=True, on_delete=models.SET_NULL,
-        verbose_name=_(u"content type"))
+        verbose_name=_(u"content type"), related_name='attributes')
 
     slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
                           help_text=_(u"Short unique attribute label"))
@@ -189,6 +189,10 @@ class Attribute(models.Model):
 
     enum_group = models.ForeignKey(EnumGroup, verbose_name=_(u"choice group"),
                                    blank=True, null=True, on_delete=models.SET_NULL)
+    
+    object_content_type = models.ForeignKey(
+        ContentType, blank=True, null=True, on_delete=models.SET_NULL,
+        verbose_name=_(u"content type"), related_name='attributes_by_object')
 
     type = models.CharField(_(u"type"), max_length=20, blank=True, null=True)
 

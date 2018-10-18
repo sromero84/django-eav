@@ -395,6 +395,14 @@ class Value(models.Model):
                                         u"choice for %s(attribute)") % \
                                         {'choice': self.value_enum,
                                          'attribute': self.attribute})
+        if self.attribute.datatype == Attribute.TYPE_OBJECT and \
+           self.value_object and self.attribute.object_content_type:
+            object_content_type = ContentType.objects.get_for_model(self.value_object)
+            if object_content_type != self.attribute.object_content_type:
+                raise ValidationError(_(u"%(ct)s is not a valid " \
+                                        u"object_content_type for %s(attribute)") % \
+                                        {'ct': object_content_type,
+                                         'attribute': self.attribute})
 
     def _get_value(self):
         '''

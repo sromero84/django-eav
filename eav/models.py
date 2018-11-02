@@ -37,6 +37,7 @@ Classes
 from django.conf import settings
 from django.contrib.contenttypes import fields as generic
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.gis.db import models as gis_models
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -151,7 +152,7 @@ class Attribute(models.Model):
 
     class Meta:
         ordering = ['created', 'name']
-        unique_together = ('content_type', 'slug')
+        unique_together = ('content_type', 'name')
 
     TYPE_TEXT = 'text'
     TYPE_FLOAT = 'float'
@@ -161,6 +162,8 @@ class Attribute(models.Model):
     TYPE_BOOLEAN = 'bool'
     TYPE_OBJECT = 'object'
     TYPE_ENUM = 'enum'
+    TYPE_POINT = 'point'
+    TYPE_MULTIPOLYGON = 'multipolygon'
 
     DATATYPE_CHOICES = (
         (TYPE_TEXT, _(u"Text")),
@@ -171,6 +174,26 @@ class Attribute(models.Model):
         (TYPE_BOOLEAN, _(u"True / False")),
         (TYPE_OBJECT, _(u"Django Object")),
         (TYPE_ENUM, _(u"Multiple Choice")),
+        (TYPE_POINT, _(u"Point")),
+        (TYPE_MULTIPOLYGON, _(u"Multipolygon")),
+    )
+
+    SIZE_MINI = 1
+    SIZE_TINY = 2
+    SIZE_SMALL = 3
+    SIZE_MEDIUM = 4
+    SIZE_LARGE = 6
+    SIZE_VERY_LARGE = 8
+    SIZE_FULL_LENGTH = 12
+
+    SIZE_CHOICES = (
+        (SIZE_MINI, _('Mini')),
+        (SIZE_TINY, _('Tiny')),
+        (SIZE_SMALL, _('Small')),
+        (SIZE_MEDIUM, _('Medium')),
+        (SIZE_LARGE, _('Large')),
+        (SIZE_VERY_LARGE, _('Very large')),
+        (SIZE_FULL_LENGTH, _('Full length')),
     )
 
     name = models.CharField(_(u"name"), max_length=100,
@@ -180,12 +203,16 @@ class Attribute(models.Model):
         ContentType, blank=True, null=True, on_delete=models.SET_NULL,
         verbose_name=_(u"content type"), related_name='attributes')
 
-    slug = EavSlugField(_(u"slug"), max_length=50, db_index=True,
-                          help_text=_(u"Short unique attribute label"))
+    slug = EavSlugField(
+        _(u"slug"), max_length=50, unique=True, help_text=_(u"Short unique attribute label"))
 
-    description = models.CharField(_(u"description"), max_length=256,
-                                     blank=True, null=True,
-                                     help_text=_(u"Short description"))
+    size = models.PositiveSmallIntegerField(
+        blank=True, choices=SIZE_CHOICES, default=SIZE_MEDIUM,
+        help_text=_('Size of the data contained. User for proper display of forms.'))
+
+    description = models.CharField(
+        _(u"description"), max_length=256, blank=True, null=True,
+        help_text=_(u"Short description"))
 
     enum_group = models.ForeignKey(EnumGroup, verbose_name=_(u"choice group"),
                                    blank=True, null=True, on_delete=models.SET_NULL)
@@ -196,11 +223,7 @@ class Attribute(models.Model):
 
     type = models.CharField(_(u"type"), max_length=20, blank=True, null=True)
 
-    @property
-    def help_text(self):
-        return self.description
-
-    datatype = EavDatatypeField(_(u"data type"), max_length=7,
+    datatype = EavDatatypeField(_(u"data type"), max_length=12,
                                 choices=DATATYPE_CHOICES)
 
     created = models.DateTimeField(_(u"created"), default=timezone.now,
@@ -213,6 +236,10 @@ class Attribute(models.Model):
     display_order = models.PositiveIntegerField(_(u"display order"), default=1)
 
     objects = models.Manager()
+
+    @property
+    def help_text(self):
+        return self.description
 
     def get_validators(self):
         '''
@@ -233,6 +260,8 @@ class Attribute(models.Model):
             'bool': validate_bool,
             'object': validate_object,
             'enum': validate_enum,
+            'point': validate_point,
+            'multipolygon': validate_multipolygon,
         }
 
         validation_function = DATATYPE_VALIDATORS[self.datatype]
@@ -262,7 +291,7 @@ class Attribute(models.Model):
         provided.
         '''
         if not self.slug:
-            self.slug = EavSlugField.create_slug_from_name(self.name)
+            self.slug = EavSlugField.create_slug(self.content_type, self.name)
         self.full_clean()
         super(Attribute, self).save(*args, **kwargs)
 
@@ -360,6 +389,9 @@ class Value(models.Model):
     value_bool = models.NullBooleanField(blank=True, null=True)
     value_enum = models.ForeignKey(EnumValue, blank=True, null=True, on_delete=models.SET_NULL,
                                    related_name='eav_values')
+    # geo-spatial
+    value_point = gis_models.PointField(null=True, blank=True)
+    value_multipolygon = gis_models.MultiPolygonField(null=True, blank=True)
 
     generic_value_id = models.IntegerField(blank=True, null=True)
     generic_value_ct = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL,
@@ -483,6 +515,15 @@ class Entity(object):
         getting the value a user set for one of our attributes, without going to the db to check
         '''
         return self.__dict__[attribute_slug]
+    
+    def set_value(self, attr, value):
+        '''
+        Set the value to the EAV using the `attr` slug as key
+
+        :param attr: attribute to use for setting the value
+        :type attr: Attribute
+        '''
+        setattr(self, attr.slug, value)
 
     def save(self):
         '''

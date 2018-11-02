@@ -36,11 +36,12 @@ Functions
 from datetime import date
 from decimal import Decimal
 
-from django.utils import timezone
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.gis.geos import MultiPolygon, Point
 from django.core.exceptions import ValidationError
 from django.core.validators import DecimalValidator
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 
 def validate_text(value):
@@ -128,4 +129,20 @@ def validate_enum(value):
         raise ValidationError(_(u"Must be an EnumValue model object instance"))
     if not value.pk:
         raise ValidationError(_(u"EnumValue has not been saved yet"))
+    return value
+
+def validate_point(value):
+    """
+    Raises ``ValidationError`` if value is not valid for creating a Point
+    """
+    if not isinstance(value, Point):
+        raise ValidationError(_('Must be a Point instance'))
+    return value
+
+def validate_multipolygon(value):
+    """
+    Raises ``ValidationError`` if value is not valid for creating a MultiPolygon
+    """
+    if not isinstance(value, MultiPolygon):
+        raise ValidationError(_('Must be a MultiPolygon instance'))
     return value

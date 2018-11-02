@@ -1,14 +1,14 @@
+from django.contrib.auth.models import User
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
+from django.core.exceptions import ValidationError
+from django.test import TestCase
 from django.utils import timezone
 
-from django.test import TestCase
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-
 import eav
-from ..registry import EavConfig
-from ..models import Attribute, Value, EnumValue, EnumGroup
 
-from .models import Patient, Encounter
+from ..models import Attribute, EnumGroup, EnumValue, Value
+from ..registry import EavConfig
+from .models import Encounter, Patient
 
 
 class DataValidation(TestCase):
@@ -23,6 +23,8 @@ class DataValidation(TestCase):
         Attribute.objects.create(name='City', datatype=Attribute.TYPE_TEXT)
         Attribute.objects.create(name='Pregnant?', datatype=Attribute.TYPE_BOOLEAN)
         Attribute.objects.create(name='User', datatype=Attribute.TYPE_OBJECT)
+        Attribute.objects.create(name='Address', datatype=Attribute.TYPE_POINT)
+        Attribute.objects.create(name='Zone', datatype=Attribute.TYPE_MULTIPOLYGON)
 
     def tearDown(self):
         eav.unregister(Patient)
@@ -209,3 +211,23 @@ class DataValidation(TestCase):
         ynu.enums.add(unkown)
         a = Attribute(name='color', datatype=Attribute.TYPE_TEXT, enum_group=ynu)
         self.assertRaises(ValidationError, a.save)
+
+    def test_point_validation(self):
+        p = Patient.objects.create(name='Joe')
+        p.eav.address = True
+        self.assertRaises(ValidationError, p.save)
+        point = Point(12.4604, 43.9420)
+        p.eav.address = point
+        p.save()
+        self.assertEqual(Patient.objects.get(pk=p.pk).eav.address, point)
+
+    def test_multipolygon_validation(self):
+        p = Patient.objects.create(name='Joe')
+        p.eav.zone = True
+        self.assertRaises(ValidationError, p.save)
+        poly1 = Polygon(((0.0, 0.0), (0.0, 50.0), (50.0, 50.0), (50.0, 0.0), (0.0, 0.0)))
+        poly2 = Polygon(((50.0, 50.0), (50.0, 80.0), (80.0, 80.0), (80.0, 50.0), (50.0, 50.0)))
+        multipoly = MultiPolygon((poly1, poly2))
+        p.eav.zone = multipoly
+        p.save()
+        self.assertEqual(Patient.objects.get(pk=p.pk).eav.zone, multipoly)

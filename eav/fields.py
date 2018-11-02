@@ -32,9 +32,10 @@ Classes
 
 import re
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 
 
 class EavSlugField(models.SlugField):
@@ -57,17 +58,15 @@ class EavSlugField(models.SlugField):
                                     u"only letters, numbers, or underscores."))
 
     @staticmethod
-    def create_slug_from_name(name):
+    def create_slug(content_type, name):
         '''
-        Creates a slug based on the name
+        Creates a slug based on the name and content type
         '''
-        name = name.strip().lower()
-
-        # Change spaces to underscores
-        name = '_'.join(name.split())
-
-        # Remove non alphanumeric characters
-        return re.sub('[^\w]', '', name)
+        if content_type:
+            string = '{}_{}_{}'.format(content_type.app_label, content_type.model, name)
+        else:
+            string = name
+        return slugify(string)  # G for general use
 
 
 class EavDatatypeField(models.CharField):

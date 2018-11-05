@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attribute',
             name='size',
-            field=models.PositiveSmallIntegerField(default=4, blank=True, choices=[(1, 'Mini'), (2, 'Tiny'), (3, 'Small'), (4, 'Medium'), (6, 'Large'), (8, 'Very large'), (12, 'Full length')], help_text='Size of the data contained. User for proper display of forms.'),
+            field=models.PositiveSmallIntegerField(blank=True, choices=[(1, 'Mini'), (2, 'Tiny'), (3, 'Small'), (4, 'Medium'), (6, 'Large'), (8, 'Very large'), (12, 'Full length')], default=4, help_text='Size of the data contained. User for proper display of forms.'),
         ),
         migrations.AddField(
             model_name='value',

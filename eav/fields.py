@@ -60,13 +60,15 @@ class EavSlugField(models.SlugField):
     @staticmethod
     def create_slug(content_type, name):
         '''
-        Creates a slug based on the name and content type
+        Creates a slug based on the name and content type, using _ instead of -
         '''
         if content_type:
-            string = '{}_{}_{}'.format(content_type.app_label, content_type.model, name)
+            string = '{}_{}__{}'.format(content_type.app_label, content_type.model, name)
         else:
             string = name
-        return slugify(string)  # G for general use
+        django_slug = slugify(string)
+        slug = django_slug.replace('-', '_')
+        return slug
 
 
 class EavDatatypeField(models.CharField):

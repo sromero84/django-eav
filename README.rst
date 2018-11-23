@@ -20,6 +20,7 @@ Introduction
 - Add ``TYPE_DECIMAL`` attribute type (using django ``DecimalValidator``)
 - Add ``TYPE_POINT`` and ``TYPE_MULTIPOLYGON`` Attribute types, relying on GeoDjango
 - Add ``size`` for ``Attribute`` displaying configuration
+- Add a global `EAV_REGISTRATION`` setting to turn on/off registration
 
 The ``EavConfig`` now includes two new attributes ``entity_class`` and ``entity_manager``, that default to ``Entity`` and ``EntityManager`` respectively.
 

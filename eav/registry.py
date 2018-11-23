@@ -28,6 +28,7 @@ Classes
 '''
 
 from django.db.models.signals import post_init, pre_save, post_save
+from django.conf import settings
 from django.contrib.contenttypes import fields as generic
 
 from .managers import EntityManager
@@ -72,6 +73,9 @@ class Registry(object):
         .. note::
            Multiple registrations for the same entity are harmlessly ignored.
         '''
+        if getattr(settings, 'EAV_REGISTRATION', True) is False:
+            return
+
         if hasattr(model_cls, '_eav_config_cls'):
             return
 

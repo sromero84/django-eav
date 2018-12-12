@@ -534,6 +534,16 @@ class Entity(object):
                 attribute_value = self._getattr(attribute.slug)
                 attribute.save_value(self.model, attribute_value)
 
+    def model_bypass_required(self):
+        """
+        Called on validation with `validate_attributes` to verify if the specific model
+        can have required attributes without values.
+
+        :return: whether or not the model can have required attributes without values
+        :rtype: bool
+        """
+        return False
+
     def validate_attributes(self):
         '''
         Called before :meth:`save`, first validate all the entity values to
@@ -550,11 +560,12 @@ class Entity(object):
             else:
                 value = values_dict.get(attribute.slug, None)
 
-            if value is None:
-                if attribute.required:
-                    raise ValidationError(_(u"%(attr)s EAV field cannot " \
-                                                u"be blank") % \
-                                              {'attr': attribute.slug})
+            if value is None and attribute.required:
+                if self.model_bypass_required():
+                    continue  # avoid further checks, validate the attribute
+                else:
+                    raise ValidationError(
+                        _(u"%(attr)s EAV field cannot " u"be blank") % {'attr': attribute.slug})
             else:
                 try:
                     attribute.validate_value(value)

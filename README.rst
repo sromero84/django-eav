@@ -21,6 +21,7 @@ Introduction
 - Add ``TYPE_POINT`` and ``TYPE_MULTIPOLYGON`` Attribute types, relying on GeoDjango
 - Add ``size`` for ``Attribute`` displaying configuration
 - Add a global `EAV_REGISTRATION`` setting to turn on/off registration
+- Add a `model_bypass_required()` method to ``Entity` to allow overriding in a custom class and permit some models to have required attributes without value
 
 The ``EavConfig`` now includes two new attributes ``entity_class`` and ``entity_manager``, that default to ``Entity`` and ``EntityManager`` respectively.
 
